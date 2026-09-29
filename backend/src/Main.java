@@ -49,7 +49,12 @@ public class Main {
             else if (method.equals("GET") && path.equals("/api/participantes")) responder(exchange, 200, participantesJson());
             else if (method.equals("POST") && path.equals("/api/participantes")) {
                 int id = service.getQuantidadeParticipantes() + 1;
-                service.cadastrarParticipante(new Participante(id, campo(body, "nome"), campo(body, "cpf")));
+                String cpf = campo(body, "cpf");
+                if (!isCpfValido(cpf)) {
+                    responder(exchange, 400, "{\"erro\":\"CPF inválido.\"}");
+                    return;
+                }
+                service.cadastrarParticipante(new Participante(id, campo(body, "nome"), cpf));
                 responder(exchange, 201, "{\"mensagem\":\"Participante cadastrado com sucesso.\"}");
             } else if (method.equals("POST") && path.matches("/api/leiloes/\\d+")) {
                 int id = numeroFinal(path);
@@ -105,6 +110,43 @@ public class Main {
         for (int i = 0; i < l.getQuantidadeLances(); i++) { if (i > 0) s.append(','); Lance x = l.getLances()[i]; s.append("{\"participante\":").append(json(x.getParticipante().getNome())).append(",\"valor\":").append(x.getValor()).append(",\"data\":").append(json(x.getDataFormatada())).append('}'); }
         return s.append("]}").toString();
     }
+    private static boolean isCpfValido(String cpf) {
+        if (cpf == null) return false;
+
+        cpf = cpf.replaceAll("[^\\d]", "");
+
+        if (cpf.length() != 11 || cpf.matches("(\\d)\\1{10}")) {
+            return false;
+        }
+
+        try {
+            int[] pesos1 = {10, 9, 8, 7, 6, 5, 4, 3, 2};
+            int[] pesos2 = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2};
+
+            int soma1 = 0;
+            int soma2 = 0;
+
+            for (int i = 0; i < 9; i++) {
+                int digito = Character.getNumericValue(cpf.charAt(i));
+                soma1 += digito * pesos1[i];
+                soma2 += digito * pesos2[i];
+            }
+
+            int resto1 = (soma1 * 10) % 11;
+            if (resto1 == 10) resto1 = 0;
+            if (resto1 != Character.getNumericValue(cpf.charAt(9))) return false;
+
+            soma2 += resto1 * 2;
+            int resto2 = (soma2 * 10) % 11;
+            if (resto2 == 10) resto2 = 0;
+
+            return resto2 == Character.getNumericValue(cpf.charAt(10));
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private static String campo(String body, String nome) { Matcher m = Pattern.compile("\\\"" + nome + "\\\"\\s*:\\s*(?:\\\"([^\\\"]*)\\\"|([^,}]+))").matcher(body); if (!m.find()) throw new IllegalArgumentException("Campo obrigatório: " + nome); return m.group(1) != null ? m.group(1) : m.group(2).trim(); }
     private static int numeroFinal(String path) { return Integer.parseInt(path.substring(path.lastIndexOf('/') + 1)); }
     private static int numeroDaRota(String path) { return Integer.parseInt(path.split("/")[3]); }
