@@ -5,6 +5,35 @@ const $ = (s) => document.querySelector(s);
 const moeda = (v) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const toast = (msg) => { const el = $('#toast'); el.textContent = msg; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 3200); };
 
+function validarCPF(cpf) {
+    cpf = cpf.replace(/[^\d]+/g, '');
+
+    if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) {
+        return false;
+    }
+
+    let soma = 0;
+    let resto;
+
+    for (let i = 1; i <= 9; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+    }
+    resto = (soma * 10) % 11;
+    if ((resto === 10) || (resto === 11)) resto = 0;
+    if (resto !== parseInt(cpf.substring(9, 10))) return false;
+
+    soma = 0;
+    // Validação do segundo dígito
+    for (let i = 1; i <= 10; i++) {
+        soma += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+    }
+    resto = (soma * 10) % 11;
+    if ((resto === 10) || (resto === 11)) resto = 0;
+    if (resto !== parseInt(cpf.substring(10, 11))) return false;
+
+    return true;
+}
+
 async function carregar() {
   try {
     [cavalos, participantes] = await Promise.all([
@@ -80,6 +109,7 @@ $('#busca').addEventListener('input', e => renderizar(cavalos.filter(c => c.nome
 $('#form-participante').addEventListener('submit', async (e) => {
   e.preventDefault();
   const dados = Object.fromEntries(new FormData(e.target));
+  if (!validarCPF(dados.cpf)) return toast('CPF inválido. Confira os números digitados.');
   const r = await fetch(`${api}/participantes`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(dados) });
   const resposta = await r.json();
   if (!r.ok) return toast(resposta.erro);
