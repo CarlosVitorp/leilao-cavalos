@@ -18,6 +18,7 @@ import java.util.Scanner;
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     private static final LeilaoService service = new LeilaoService();
+    private static HttpServer servidor;
 
     public static void main(String[] args) {
         carregarDadosIniciais();
@@ -31,12 +32,13 @@ public class Main {
             catch (IllegalArgumentException e) { System.out.println("Entrada inválida: " + e.getMessage()); }
         } while (opcao != 0);
         scanner.close();
+        if (servidor != null) servidor.stop(0);
         System.out.println("Programa encerrado.");
     }
 
     private static void iniciarServidor() {
         try {
-            HttpServer servidor = HttpServer.create(new InetSocketAddress("127.0.0.1", 8080), 0);
+            servidor = HttpServer.create(new InetSocketAddress("127.0.0.1", 8080), 0);
             servidor.createContext("/api", Main::atenderApi);
             servidor.start();
             System.out.println("Frontend conectado em http://127.0.0.1:8000");
@@ -70,7 +72,7 @@ public class Main {
                 if (partes[4].equals("encerrar")) leilao.encerrarLeilao(); else leilao.reabrirLeilao();
                 responder(troca, 200, leilaoJson(leilao));
             } else responder(troca, 404, "{\"erro\":\"Rota não encontrada.\"}");
-        } catch (CavaloNaoEncontradoException | LanceInvalidoException | NumberFormatException e) {
+        } catch (CavaloNaoEncontradoException | LanceInvalidoException | IllegalArgumentException e) {
             responder(troca, 400, "{\"erro\":" + json(e.getMessage()) + "}");
         } catch (Exception e) {
             responder(troca, 500, "{\"erro\":\"Erro interno.\"}");
@@ -100,7 +102,19 @@ public class Main {
         for (int i = 0; i < l.getQuantidadeLances(); i++) { if (i > 0) json.append(','); Lance lance = l.getLances()[i]; json.append("{\"participante\":").append(json(lance.getParticipante().getNome())).append(",\"valor\":").append(lance.getValor()).append('}'); }
         return json.append("]}").toString();
     }
-    private static String json(String valor) { return "\"" + valor.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", " ") + "\""; }
+    private static String json(String valor) {
+        StringBuilder resultado = new StringBuilder("\"");
+        for (int i = 0; i < valor.length(); i++) {
+            char caractere = valor.charAt(i);
+            if (caractere == '\\' || caractere == '"') resultado.append('\\').append(caractere);
+            else if (caractere == '\n') resultado.append("\\n");
+            else if (caractere == '\r') resultado.append("\\r");
+            else if (caractere == '\t') resultado.append("\\t");
+            else if (caractere < 32) resultado.append(String.format("\\u%04x", (int) caractere));
+            else resultado.append(caractere);
+        }
+        return resultado.append('"').toString();
+    }
     private static void responder(HttpExchange troca, int status, String corpo) throws IOException { byte[] bytes = corpo.getBytes(StandardCharsets.UTF_8); troca.getResponseHeaders().set("Content-Type", "application/json; charset=UTF-8"); troca.getResponseHeaders().set("Access-Control-Allow-Origin", "*"); troca.sendResponseHeaders(status, bytes.length); troca.getResponseBody().write(bytes); troca.close(); }
 
     private static void exibirMenu() {

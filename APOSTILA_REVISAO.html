@@ -1,0 +1,26 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Revisão — Leilão de Cavalos</title><style>body{font-family:Arial,sans-serif;color:#20251f;line-height:1.5;margin:42px}h1{color:#203a2b;border-bottom:3px solid #b98642;padding-bottom:10px}h2{color:#203a2b;margin-top:28px}h3{color:#b06f2b}code,pre{background:#f2f0e8;padding:2px 5px;border-radius:3px}pre{padding:12px;white-space:pre-wrap}li{margin:6px 0}.box{background:#f2f0e8;border-left:4px solid #b98642;padding:12px}@media print{body{margin:25mm}h2{page-break-after:avoid}}</style></head><body>
+<h1>Apostila de revisão — Leilão de Cavalos</h1>
+<p>Material de revisão dos conceitos de Java usados no projeto: fundamentos, classes, objetos, encapsulamento, arrays, String, Scanner, exceções e integração entre backend e frontend.</p>
+<h2>1. Como o projeto funciona</h2><p>O programa começa em <code>Main.main</code>, cria os dados iniciais, inicia a API local e exibe um menu de console. O usuário pode listar cavalos, pesquisar, iniciar leilões, cadastrar participantes, registrar lances, consultar histórico, encerrar e reabrir leilões.</p><p>O frontend consulta a API Java em <code>http://127.0.0.1:8080/api</code>. O frontend é servido separadamente em <code>http://127.0.0.1:8000</code>.</p>
+<h2>2. Classes do projeto</h2><ul><li><b>Cavalo:</b> guarda id, nome, raça, idade, sexo, valor inicial e situação de venda.</li><li><b>Participante:</b> guarda id, nome e CPF, validando o formato e os dígitos verificadores.</li><li><b>Lance:</b> associa um participante a um valor e registra a data.</li><li><b>Leilao:</b> contém um cavalo, uma lista em array de lances e as regras de lance, encerramento e reabertura.</li><li><b>LeilaoService:</b> administra os arrays de cavalos, participantes e leilões.</li></ul>
+<h2>3. Encapsulamento</h2><p>Os atributos são <code>private</code>. O acesso acontece pelos métodos públicos, como <code>getNome()</code>, <code>getValor()</code> e <code>isEncerrado()</code>. As regras ficam dentro das classes, evitando estados inválidos.</p>
+<h2>4. Arrays</h2><p>O serviço utiliza arrays de tamanho fixo: 50 cavalos, 100 participantes e 50 leilões. As variáveis de quantidade indicam quantas posições estão ocupadas. O primeiro índice de um array é zero.</p>
+<pre>for (int i = 0; i &lt; service.getQuantidadeCavalos(); i++) {
+    Cavalo cavalo = service.getCavalos()[i];
+    System.out.println(cavalo);
+}</pre>
+<h2>5. Scanner, condicionais e laços</h2><p><code>Scanner</code> lê as opções do menu. O <code>switch</code> escolhe a operação. O laço <code>do-while</code> mantém o menu funcionando até a opção zero. Os laços <code>for</code> percorrem os arrays.</p>
+<h2>6. Exceções</h2><ul><li><code>CavaloNaoEncontradoException</code>: cavalo ou leilão não encontrado.</li><li><code>LanceInvalidoException</code>: valor inválido, participante inexistente ou lance menor que o atual.</li><li><code>LeilaoEncerradoException</code>: tentativa de lance em leilão fechado.</li></ul><pre>try {
+    leilao.adicionarLance(lance);
+} catch (LanceInvalidoException e) {
+    System.out.println(e.getMessage());
+}</pre>
+<h2>7. Regras de negócio</h2><ul><li>O lance precisa ser positivo, finito e ter no máximo duas casas decimais.</li><li>O primeiro lance precisa superar o valor inicial.</li><li>Os próximos lances precisam superar o maior lance anterior.</li><li>Leilões encerrados não aceitam lances.</li><li>Reabrir o leilão mantém o histórico.</li><li>CPF inválido ou duplicado não é aceito.</li></ul>
+<h2>8. Métodos principais</h2><ul><li><code>LeilaoService.iniciarLeilao(id)</code>: busca o cavalo e cria ou recupera o leilão.</li><li><code>Leilao.adicionarLance(lance)</code>: valida e armazena o lance.</li><li><code>Leilao.encerrarLeilao()</code>: fecha o leilão e marca o cavalo como vendido quando há lance.</li><li><code>Leilao.reabrirLeilao()</code>: abre novamente e preserva o histórico.</li><li><code>LeilaoService.buscarCavalo(pesquisa)</code>: pesquisa pelo nome sem diferenciar maiúsculas e minúsculas.</li></ul>
+<h2>9. Como executar</h2><pre>$fontes = Get-ChildItem backend/src -Recurse -Filter *.java | Select-Object -ExpandProperty FullName
+javac -encoding UTF-8 --release 17 -d backend/out $fontes
+java -cp backend/out Main</pre><p>Em outro terminal:</p><pre>cd frontend
+python -m http.server 8000 --bind 127.0.0.1</pre>
+<h2>10. Perguntas para revisar</h2><ol><li>Qual é a diferença entre classe e objeto?</li><li>Por que os atributos são privados?</li><li>Por que o array precisa de uma variável de quantidade?</li><li>Qual a diferença entre <code>==</code> e <code>equals</code>?</li><li>Em que situações cada exceção personalizada é lançada?</li><li>Como o frontend envia um lance para o backend?</li></ol>
+<div class="box"><b>Checklist:</b> compilar com Java 17; iniciar o backend; iniciar o frontend; testar um lance válido; testar um lance menor; encerrar; reabrir; consultar o histórico.</div>
+</body></html>
