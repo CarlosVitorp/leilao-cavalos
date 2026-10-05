@@ -10,6 +10,9 @@ public class Cavalo {
     private boolean vendido;
 
     public Cavalo(int id, String nome, String raca, int idade, String sexo, double valorInicial) {
+        if (id <= 0 || nome == null || nome.isBlank() || raca == null || raca.isBlank()
+                || idade < 0 || sexo == null || sexo.isBlank()) throw new IllegalArgumentException("Dados do cavalo inválidos.");
+        if (!Double.isFinite(valorInicial) || valorInicial <= 0) throw new IllegalArgumentException("Valor inicial inválido.");
         this.id = id;
         this.nome = nome;
         this.raca = raca;

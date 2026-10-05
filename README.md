@@ -1,34 +1,26 @@
 # Leilão de Cavalos
 
-Projeto acadêmico baseado no PDF fornecido, com backend Java puro e frontend HTML, CSS e JavaScript. Não utiliza banco de dados: os dados ficam em arrays durante a execução.
+Projeto de console em Java para praticar classes, objetos, encapsulamento, construtores, arrays, `String`, `Scanner`, condicionais, laços e exceções personalizadas.
 
-## Requisitos
+## Como executar no PowerShell
 
-- Java 17 ou superior
-- Navegador moderno
+Na pasta `leilao-cavalos`:
 
-## Executar
-
-```bash
-cd backend
-javac -d out $(find src -name '*.java')
-java -cp out Main
+```powershell
+$fontes = Get-ChildItem backend/src -Recurse -Filter *.java | Select-Object -ExpandProperty FullName
+javac -encoding UTF-8 --release 17 -d backend/out $fontes
+java -cp backend/out Main
 ```
 
-Abra <http://localhost:8080> no navegador. O servidor Java entrega o frontend e disponibiliza a API REST em `/api`.
+## Como usar
 
-## Conceitos demonstrados
+O programa mostra um menu no terminal. É possível listar e pesquisar cavalos, iniciar leilões, cadastrar participantes, registrar e consultar lances, além de encerrar e reabrir leilões.
 
-- POO, encapsulamento, composição e sobrescrita de `toString()`.
-- Arrays `Cavalo[]`, `Participante[]`, `Leilao[]` e `Lance[]`.
-- Strings em pesquisas sem distinção entre maiúsculas e minúsculas.
-- Exceções personalizadas: `LanceInvalidoException`, `LeilaoEncerradoException` e `CavaloNaoEncontradoException`.
-- Cadastro de cavalos e participantes, catálogo, início/encerramento de leilões, lances e histórico.
+Os dados ficam em arrays durante a execução e são reiniciados quando o programa termina. Não há servidor web, banco de dados, autenticação ou bibliotecas externas.
 
 ## Estrutura
 
-- `backend/src/model`: entidades do domínio.
-- `backend/src/service`: regras de cadastro, pesquisa e controle dos leilões.
-- `backend/src/exception`: exceções específicas.
-- `backend/src/Main.java`: servidor HTTP, endpoints e dados iniciais.
-- `frontend`: interface visual do sistema.
+- `backend/src/Main.java`: menu, entrada com `Scanner` e fluxo principal;
+- `backend/src/model`: classes `Cavalo`, `Participante`, `Lance` e `Leilao`;
+- `backend/src/service/LeilaoService.java`: cadastro e buscas usando arrays;
+- `backend/src/exception`: exceções específicas do domínio.
