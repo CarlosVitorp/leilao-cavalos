@@ -20,5 +20,5 @@ public class Lance {
     public String getDataFormatada() { return data.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME); }
 
     @Override
-    public String toString() { return participante.getNome() + " ofereceu R$ " + valor; }
+    public String toString() { return String.format("%s ofereceu R$ %.2f em %s", participante.getNome(), valor, getDataFormatada()); }
 }

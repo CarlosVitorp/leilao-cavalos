@@ -28,7 +28,8 @@ public class Leilao {
             throw new LanceInvalidoException("Informe um participante e um valor positivo e finito.");
         }
         if (quantidadeLances >= lances.length) throw new LanceInvalidoException("Limite de lances atingido.");
-        if (Math.round(lance.getValor() * 100) != lance.getValor() * 100) throw new LanceInvalidoException("O lance pode ter no máximo duas casas decimais.");
+        double centavos = lance.getValor() * 100;
+        if (Math.abs(centavos - Math.rint(centavos)) > 0.0000001) throw new LanceInvalidoException("O lance pode ter no máximo duas casas decimais.");
         double valorMinimo = quantidadeLances == 0 ? cavalo.getValorInicial() : lances[quantidadeLances - 1].getValor();
         if (lance.getValor() <= valorMinimo) {
             throw new LanceInvalidoException(String.format("O lance precisa ser maior que R$ %.2f.", valorMinimo));

@@ -57,6 +57,7 @@ public class LeilaoService {
         return null;
     }
     public Participante buscarParticipantePorCpf(String cpf) {
+        if (cpf == null || cpf.isBlank()) return null;
         String normalizado = cpf.replaceAll("[^0-9]", "");
         for (int i = 0; i < quantidadeParticipantes; i++) if (participantes[i].getCpf().equals(normalizado)) return participantes[i];
         return null;

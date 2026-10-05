@@ -77,9 +77,25 @@ public class Main {
         System.out.println("Participante cadastrado com ID " + id + ".");
     }
 
-    private static int lerInteiro(String mensagem) { System.out.print(mensagem); try { return Integer.parseInt(scanner.nextLine().trim()); } catch (NumberFormatException e) { throw new IllegalArgumentException("digite um número inteiro."); } }
-    private static double lerDouble(String mensagem) { System.out.print(mensagem); try { return Double.parseDouble(scanner.nextLine().trim().replace(',', '.')); } catch (NumberFormatException e) { throw new IllegalArgumentException("digite um número válido."); } }
-    private static String lerTexto(String mensagem) { System.out.print(mensagem); String texto = scanner.nextLine().trim(); if (texto.isEmpty()) throw new IllegalArgumentException("o campo não pode ficar vazio."); return texto; }
+    private static int lerInteiro(String mensagem) {
+        System.out.print(mensagem);
+        if (!scanner.hasNextLine()) return 0;
+        try { return Integer.parseInt(scanner.nextLine().trim()); }
+        catch (NumberFormatException e) { throw new IllegalArgumentException("digite um número inteiro."); }
+    }
+    private static double lerDouble(String mensagem) {
+        System.out.print(mensagem);
+        if (!scanner.hasNextLine()) throw new IllegalArgumentException("entrada encerrada.");
+        try { return Double.parseDouble(scanner.nextLine().trim().replace(',', '.')); }
+        catch (NumberFormatException e) { throw new IllegalArgumentException("digite um número válido."); }
+    }
+    private static String lerTexto(String mensagem) {
+        System.out.print(mensagem);
+        if (!scanner.hasNextLine()) throw new IllegalArgumentException("entrada encerrada.");
+        String texto = scanner.nextLine().trim();
+        if (texto.isEmpty()) throw new IllegalArgumentException("o campo não pode ficar vazio.");
+        return texto;
+    }
 
     private static void carregarDadosIniciais() {
         service.cadastrarCavalo(new Cavalo(1, "Trovão Negro", "Quarto de Milha", 5, "Macho", 10000));
