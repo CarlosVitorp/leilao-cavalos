@@ -16,7 +16,9 @@ java -cp backend/out Main
 
 O programa mostra um menu no terminal. É possível listar e pesquisar cavalos, iniciar leilões, cadastrar participantes, registrar e consultar lances, além de encerrar e reabrir leilões.
 
-Os dados ficam em arrays durante a execução e são reiniciados quando o programa termina. Não há servidor web, banco de dados, autenticação ou bibliotecas externas.
+O programa também inicia uma API simples na porta 8080 para o frontend. Em outro terminal, execute `cd frontend; python -m http.server 8000 --bind 127.0.0.1` e acesse `http://127.0.0.1:8000/`. O catálogo consulta o backend e os botões usam as regras das classes Java.
+
+Os dados ficam em arrays durante a execução e são reiniciados quando o programa termina. Não há banco de dados, autenticação ou bibliotecas externas.
 
 ## Estrutura
 
