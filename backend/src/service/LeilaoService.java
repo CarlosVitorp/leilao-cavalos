@@ -13,6 +13,15 @@ public class LeilaoService {
     private int quantidadeParticipantes;
     private int quantidadeLeiloes;
 
+    public void resetar() {
+        for (int i = 0; i < cavalos.length; i++) cavalos[i] = null;
+        for (int i = 0; i < participantes.length; i++) participantes[i] = null;
+        for (int i = 0; i < leiloes.length; i++) leiloes[i] = null;
+        quantidadeCavalos = 0;
+        quantidadeParticipantes = 0;
+        quantidadeLeiloes = 0;
+    }
+
     public void cadastrarCavalo(Cavalo cavalo) {
         if (cavalo == null) throw new IllegalArgumentException("Informe o cavalo.");
         for (int i = 0; i < quantidadeCavalos; i++) if (cavalos[i].getId() == cavalo.getId()) throw new IllegalArgumentException("ID de cavalo já cadastrado.");

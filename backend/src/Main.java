@@ -53,6 +53,7 @@ public class Main {
             String caminho = troca.getRequestURI().getPath();
             String[] partes = caminho.split("/");
             if (metodo.equals("GET") && caminho.equals("/api/cavalos")) responder(troca, 200, cavalosJson());
+            else if (metodo.equals("POST") && caminho.equals("/api/resetar")) { service.resetar(); carregarDadosIniciais(); responder(troca, 200, "{\"mensagem\":\"Leilão resetado.\"}"); }
             else if (metodo.equals("GET") && caminho.equals("/api/participantes")) responder(troca, 200, participantesJson());
             else if (metodo.equals("POST") && caminho.equals("/api/participantes")) {
                 String corpo = new String(troca.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
