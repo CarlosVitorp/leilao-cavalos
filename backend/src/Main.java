@@ -68,7 +68,9 @@ public class Main {
                 else if (metodo.equals("GET")) responder(troca, 200, leilaoJson(service.buscarLeilao(id)));
                 else responder(troca, 405, "{\"erro\":\"Método não permitido.\"}");
             } else if (partes.length == 5 && partes[3].matches("\\d+") && partes[4].equals("lances") && metodo.equals("POST")) {
-                Leilao leilao = service.buscarLeilao(Integer.parseInt(partes[3]));
+                Leilao leilao;
+                try { leilao = service.buscarLeilao(Integer.parseInt(partes[3])); }
+                catch (CavaloNaoEncontradoException inexistente) { leilao = service.iniciarLeilao(Integer.parseInt(partes[3])); }
                 String corpo = new String(troca.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
                 int participanteId = Integer.parseInt(campo(corpo, "participanteId"));
                 double valor = Double.parseDouble(campo(corpo, "valor").replace(',', '.'));
