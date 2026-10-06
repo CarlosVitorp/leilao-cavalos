@@ -53,6 +53,14 @@ public class Main {
             String caminho = troca.getRequestURI().getPath();
             String[] partes = caminho.split("/");
             if (metodo.equals("GET") && caminho.equals("/api/cavalos")) responder(troca, 200, cavalosJson());
+            else if (metodo.equals("GET") && caminho.equals("/api/participantes")) responder(troca, 200, participantesJson());
+            else if (metodo.equals("POST") && caminho.equals("/api/participantes")) {
+                String corpo = new String(troca.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+                int id = service.getQuantidadeParticipantes() + 1;
+                Participante participante = new Participante(id, campo(corpo, "nome"), campo(corpo, "cpf"));
+                service.cadastrarParticipante(participante);
+                responder(troca, 201, participanteJson(participante));
+            }
             else if (partes.length == 4 && partes[3].matches("\\d+")) {
                 int id = Integer.parseInt(partes[3]);
                 if (metodo.equals("POST")) responder(troca, 201, leilaoJson(service.iniciarLeilao(id)));
@@ -92,6 +100,12 @@ public class Main {
         for (int i = 0; i < service.getQuantidadeCavalos(); i++) { if (i > 0) json.append(','); json.append(cavaloJson(service.getCavalos()[i])); }
         return json.append(']').toString();
     }
+    private static String participantesJson() {
+        StringBuilder json = new StringBuilder("[");
+        for (int i = 0; i < service.getQuantidadeParticipantes(); i++) { if (i > 0) json.append(','); json.append(participanteJson(service.getParticipantes()[i])); }
+        return json.append(']').toString();
+    }
+    private static String participanteJson(Participante p) { return "{\"id\":" + p.getId() + ",\"nome\":" + json(p.getNome()) + ",\"cpf\":" + json(p.getCpf()) + "}"; }
     private static String cavaloJson(Cavalo c) {
         Leilao leilao = null; try { leilao = service.buscarLeilao(c.getId()); } catch (CavaloNaoEncontradoException ignored) { }
         double atual = leilao == null || leilao.getMaiorLance() == null ? c.getValorInicial() : leilao.getMaiorLance().getValor();

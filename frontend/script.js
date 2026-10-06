@@ -1,38 +1,9 @@
-const api = 'http://127.0.0.1:8080/api';
-let cavalos = [];
-const moeda = v => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-const escapar = v => String(v).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
-
-async function requisitar(url, opcoes = {}) {
-  const resposta = await fetch(url, opcoes);
-  const dados = await resposta.json();
-  if (!resposta.ok) throw Error(dados.erro || 'Erro na operação.');
-  return dados;
-}
-
-async function carregar() {
-  try { cavalos = await requisitar(`${api}/cavalos`); renderizar(); }
-  catch (_) { document.querySelector('#catalogo').innerHTML = '<p>Backend offline. Execute o programa Java antes de usar o catálogo.</p>'; }
-}
-
-function renderizar() {
-  const busca = document.querySelector('#busca').value.toLowerCase();
-  const lista = cavalos.filter(c => c.nome.toLowerCase().includes(busca));
-  document.querySelector('#catalogo').innerHTML = lista.map(c => `<article class="card"><h3>${escapar(c.nome)}</h3><p>${escapar(c.raca)} · ${c.idade} anos · ${escapar(c.sexo)}</p><div class="price">Lance atual: ${moeda(c.lanceAtual)}</div><button data-id="${c.id}">${c.leilaoEncerrado ? 'Ver histórico' : 'Abrir leilão'}</button></article>`).join('') || '<p>Nenhum cavalo encontrado.</p>';
-  document.querySelectorAll('[data-id]').forEach(botao => botao.onclick = () => abrir(Number(botao.dataset.id)));
-}
-
-async function abrir(id) {
-  try {
-    const cavalo = cavalos.find(c => c.id === id);
-    const leilao = await requisitar(`${api}/leiloes/${id}`, cavalo.leilaoAtivo || cavalo.leilaoEncerrado ? {} : { method: 'POST' });
-    const entrada = prompt(`Leilão de ${leilao.cavalo.nome}\nLance atual: ${moeda(leilao.cavalo.lanceAtual)}\nDigite "historico" ou o valor do lance:`);
-    if (entrada === null || entrada.toLowerCase() === 'historico') { alert(leilao.lances.map(x => `${x.participante}: ${moeda(x.valor)}`).join('\n') || 'Nenhum lance.'); return; }
-    const participante = prompt('ID do participante:');
-    await requisitar(`${api}/leiloes/${id}/lances`, { method: 'POST', headers: {'Content-Type':'application/x-www-form-urlencoded'}, body: `participanteId=${encodeURIComponent(participante)}&valor=${encodeURIComponent(entrada)}` });
-    alert('Lance registrado.'); await carregar();
-  } catch (erro) { alert(erro.message); }
-}
-
-document.querySelector('#busca').addEventListener('input', renderizar);
-carregar();
+const api='http://127.0.0.1:8080/api';let cavalos=[],participantes=[];
+const moeda=v=>Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const escapar=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function requisitar(url,opcoes={}){const r=await fetch(url,opcoes);const d=await r.json();if(!r.ok)throw Error(d.erro||'Não foi possível concluir a operação.');return d;}
+async function carregar(){try{[cavalos,participantes]=await Promise.all([requisitar(`${api}/cavalos`),requisitar(`${api}/participantes`)]);renderizar();}catch(e){document.querySelector('#catalogo').innerHTML='<p>Backend offline. Inicie o programa Java.</p>';}}
+function renderizar(){const q=document.querySelector('#busca').value.toLowerCase();document.querySelector('#catalogo').innerHTML=cavalos.filter(c=>c.nome.toLowerCase().includes(q)).map(c=>`<article class="card"><h3>${escapar(c.nome)}</h3><p>${escapar(c.raca)} · ${c.idade} anos · ${escapar(c.sexo)}</p><div class="price">Lance atual: ${moeda(c.lanceAtual)}</div><small>${c.leilaoEncerrado?'Encerrado':c.leilaoAtivo?'Em andamento':'Disponível'}</small><button data-id="${c.id}">${c.leilaoEncerrado?'Ver opções':'Abrir leilão'}</button></article>`).join('')||'<p>Nenhum cavalo encontrado.</p>';document.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>abrir(Number(b.dataset.id)));}
+async function abrir(id){try{const c=cavalos.find(x=>x.id===id);const l=await requisitar(`${api}/leiloes/${id}`,c.leilaoAtivo||c.leilaoEncerrado?{}:{method:'POST'});const acao=prompt(`Leilão: ${l.cavalo.nome}\nLance atual: ${moeda(l.cavalo.lanceAtual)}\nDigite: lance, historico, encerrar ou reabrir`);if(!acao)return;if(acao.toLowerCase()==='historico'){alert(l.lances.map(x=>`${x.participante}: ${moeda(x.valor)}`).join('\n')||'Nenhum lance.');return;}if(acao.toLowerCase()==='encerrar'||acao.toLowerCase()==='reabrir'){await requisitar(`${api}/leiloes/${id}/${acao.toLowerCase()}`,{method:'POST'});alert(`Leilão ${acao}do.`);await carregar();return;}const valor=acao.toLowerCase()==='lance'?prompt('Valor do lance:'):acao;const p=prompt('ID do participante (1 ou 2):');if(!valor||!p)return;await requisitar(`${api}/leiloes/${id}/lances`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`participanteId=${encodeURIComponent(p)}&valor=${encodeURIComponent(valor)}`});alert('Lance registrado.');await carregar();}catch(e){alert(e.message);}}
+async function cadastrar(){try{const nome=prompt('Nome do participante:');const cpf=prompt('CPF válido:');if(!nome||!cpf)return;const p=await requisitar(`${api}/participantes`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`nome=${encodeURIComponent(nome)}&cpf=${encodeURIComponent(cpf)}`});alert(`Participante cadastrado com ID ${p.id}.`);await carregar();}catch(e){alert(e.message);}}
+document.querySelector('#busca').addEventListener('input',renderizar);document.querySelector('#cadastrar').onclick=cadastrar;carregar();
