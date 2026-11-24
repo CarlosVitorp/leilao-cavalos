@@ -1,0 +1,37 @@
+.app-root {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-background-color: #f5f3ed;
+    -fx-text-fill: #20251f;
+}
+.header { -fx-background-color: white; -fx-border-color: #deded4; -fx-border-width: 0 0 1 0; }
+.logo { -fx-text-fill: #203a2b; -fx-font-size: 17px; -fx-font-weight: bold; -fx-letter-spacing: 2px; }
+.logo-accent { -fx-text-fill: #b98642; -fx-font-size: 17px; -fx-font-weight: bold; -fx-letter-spacing: 2px; }
+.muted { -fx-text-fill: #6c736b; -fx-font-size: 13px; }
+.connection { -fx-font-size: 12px; -fx-font-weight: bold; }
+.online { -fx-text-fill: #2e7d52; }
+.offline { -fx-text-fill: #a94735; }
+.sidebar { -fx-background-color: #fffefa; -fx-border-color: #deded4; -fx-border-width: 0 1 0 0; }
+.section-title { -fx-text-fill: #203a2b; -fx-font-family: Georgia, serif; -fx-font-size: 18px; -fx-font-weight: bold; }
+.sidebar .text-field { -fx-background-color: white; -fx-border-color: #cfcfc5; -fx-padding: 10px; }
+.primary-button { -fx-background-color: #203a2b; -fx-text-fill: white; -fx-padding: 10px 14px; -fx-cursor: hand; }
+.primary-button:hover { -fx-background-color: #2d523d; }
+.secondary-button { -fx-background-color: #eeeae0; -fx-text-fill: #203a2b; -fx-padding: 9px 12px; -fx-cursor: hand; }
+.secondary-button:hover { -fx-background-color: #ded8ca; }
+.feedback { -fx-wrap-text: true; -fx-font-size: 12px; }
+.success { -fx-text-fill: #2e7d52; }
+.error { -fx-text-fill: #a94735; }
+.hero { -fx-background-color: #203a2b; }
+.eyebrow { -fx-text-fill: #d6b275; -fx-font-size: 11px; -fx-font-weight: bold; -fx-letter-spacing: 2px; }
+.hero-title { -fx-text-fill: white; -fx-font-family: Georgia, serif; -fx-font-size: 34px; -fx-font-weight: bold; }
+.hero-description { -fx-text-fill: #dbe3dc; -fx-font-size: 14px; }
+.catalog-title { -fx-text-fill: #203a2b; -fx-font-family: Georgia, serif; -fx-font-size: 25px; -fx-font-weight: bold; -fx-padding: 28px 32px 18px 32px; }
+.catalog-scroll, .catalog-scroll > .viewport { -fx-background-color: #f5f3ed; }
+.horse-grid { -fx-background-color: #f5f3ed; }
+.horse-card { -fx-background-color: white; -fx-border-color: #deded4; -fx-border-width: 1px; -fx-padding: 20px; }
+.horse-name { -fx-text-fill: #203a2b; -fx-font-family: Georgia, serif; -fx-font-size: 21px; -fx-font-weight: bold; }
+.price { -fx-text-fill: #b98642; -fx-font-size: 15px; -fx-font-weight: bold; }
+.status { -fx-padding: 5px 8px; -fx-font-size: 11px; -fx-font-weight: bold; }
+.status-active { -fx-background-color: #e5f0e6; -fx-text-fill: #2e7d52; }
+.status-available { -fx-background-color: #f0eee8; -fx-text-fill: #6c736b; }
+.status-closed { -fx-background-color: #f7e7e3; -fx-text-fill: #a94735; }
+.horse-card .combo-box, .horse-card .text-field { -fx-background-color: white; -fx-border-color: #cfcfc5; -fx-padding: 8px; }

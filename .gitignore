@@ -3,6 +3,8 @@
 *.msi
 *.zip
 
+frontend/target/
+
 *.exe
 *.msi
 *.zip

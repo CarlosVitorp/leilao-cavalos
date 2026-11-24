@@ -41,7 +41,7 @@ public class Main {
             servidor = HttpServer.create(new InetSocketAddress("127.0.0.1", 8080), 0);
             servidor.createContext("/api", Main::atenderApi);
             servidor.start();
-            System.out.println("Frontend conectado em http://127.0.0.1:8000");
+            System.out.println("API disponivel para o frontend em http://127.0.0.1:8080");
         } catch (IOException e) {
             System.out.println("Aviso: frontend indisponível (porta 8080 ocupada).");
         }
